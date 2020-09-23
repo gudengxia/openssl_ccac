@@ -5,66 +5,9 @@ openssl_ccac
 
 [OpenSSL](https://openssl.org/) is an open-source implementation of the TLS protocol and various cryptographic algorithms ([View the original README](https://github.com/open-quantum-safe/openssl/blob/OQS-OpenSSL_1_1_1-stable/README).)
 
-OQS-OpenSSL\_1\_1\_1 is a fork of OpenSSL 1.1.1 that adds quantum-safe key exchange and authentication algorithms using [liboqs](https://github.com/open-quantum-safe/liboqs) for prototyping and evaluation purposes. This fork is not endorsed by the OpenSSL project.
+OQS-OpenSSL\_1\_1\_1 is a fork of OpenSSL 1.1.1 that adds quantum-safe key exchange and authentication algorithms using [liboqs](https://github.com/open-quantum-safe/liboqs) for prototyping and evaluation purposes. This fork is not endorsed by the OpenSSL project. This version of openssl add mulan and aigis signature algorithms, base on OQS_OPENSSL_1_1_1-satble.
 
-- [Overview](#overview)
-- [Status](#status)
-  * [Limitations and Security](#limitations-and-security)
-  * [Supported Algorithms](#supported-algorithms)
-- [Quickstart](#quickstart)
-  * [Building](#building)
-    * [Linux and macOS](#linux-and-macOS)
-    * [Windows](#windows)
-    * [Build Options](#build-options)
-  * [Running](#running)
-    * [TLS demo](#tls-demo)
-    * [CMS demo](#cms-demo)
-    * [Performance testing](#performance-testing)
-    * [Integration testing](#integration-testing)
-- [Third Party Integrations](#third-party-integrations)
-- [Contributing](#contributing)
-- [License](#license)
-- [Team](#team)
-- [Acknowledgements](#acknowledgements)
 
-## Overview
-
-**liboqs** is an open source C library for quantum-resistant cryptographic algorithms. See [here](https://github.com/open-quantum-safe/liboqs/) for more information.
-
-**OQS-OpenSSL\_1\_1\_1-stable** is a fork that integrates liboqs into OpenSSL 1.1.1.  The goal of this integration is to provide easy prototyping of quantum-safe cryptography in the TLS 1.3 protocol.
-
-Both liboqs and this fork are part of the **Open Quantum Safe (OQS) project**, which aims to develop and prototype quantum-safe cryptography (QSC). More information about the project can be found [here](https://openquantumsafe.org/).
-
-Note that, referencing the terminology defined by [ETSI](https://www.etsi.org/technologies/quantum-safe-cryptography) and [CSA](https://downloads.cloudsecurityalliance.org/assets/research/quantum-safe-security/applied-quantum-safe-security.pdf), the terms "post-quantum cryptography" (PQC), "quantum-safe cryptography" (QSC) and "quantum-resistant cryptography" (QRC) all refer to the same class of cryptographic algorithms that is made available for use via this fork.
-
-## Status
-
-This fork is currently in sync with the [OpenSSL\_1\_1\_1g tag](https://github.com/openssl/openssl/tree/OpenSSL_1_1_1g), and adds the following:
-
-- quantum-safe key exchange in TLS 1.3
-- hybrid (quantum-safe + elliptic curve) key exchange in TLS 1.3
-- quantum-safe authentication in TLS 1.3
-- hybrid (quantum-safe + RSA/elliptic curve) authentication in TLS 1.3
-- CMS support (sign and verify using any of the [supported quantum-safe signature algorithms](#authentication))
-
-For more information, see the [release notes](RELEASE.md).
-
-**WE DO NOT RECOMMEND RELYING ON THIS FORK IN A PRODUCTION ENVIRONMENT OR TO PROTECT ANY SENSITIVE DATA.** This fork is at an experimental stage, and has not received the same level of auditing and analysis that OpenSSL has received. See the [Limitations and Security](#limitations-and-security) section below for more information.
-
-liboqs and our integration into OpenSSL is provided "as is", without warranty of any kind.  See the [LICENSE](https://github.com/open-quantum-safe/liboqs/blob/master/LICENSE.txt) for the full disclaimer.
-
-### Limitations and security
-
-As research advances, the supported algorithms may see rapid changes in their security, and may even prove insecure against both classical and quantum computers.
-
-We believe that the NIST Post-Quantum Cryptography standardization project is currently the best avenue to identifying potentially quantum-resistant algorithms, and strongly recommend that applications and protocols rely on the outcomes of the NIST standardization project when deploying quantum-safe cryptography.
-
-While at the time of this writing there are no vulnerabilities known in any of the quantum-safe algorithms used in this fork, it is advisable to wait on deploying quantum-safe algorithms until further guidance is provided by the standards community, especially from the NIST standardization project.
-
-We realize some parties may want to deploy quantum-safe cryptography prior to the conclusion of the standardization project.  We strongly recommend such attempts make use of so-called **hybrid cryptography**, in which quantum-safe public-key algorithms are combined with traditional public key algorithms (like RSA or elliptic curves) such that the solution is at least no less secure than existing traditional cryptography. This fork provides the ability to use hybrid cryptography.
-
-Proofs of TLS such as [[JKSS12]](https://eprint.iacr.org/2011/219) and [[KPW13]](https://eprint.iacr.org/2013/339) require a key exchange mechanism that has a form of active security, either in the form of the PRF-ODH assumption, or an IND-CCA KEM.
-Some of the KEMs provided in liboqs do provide IND-CCA security; others do not ([these datasheets](https://github.com/open-quantum-safe/liboqs/tree/master/docs/algorithms) specify which provide what security), in which case existing proofs of security of TLS against active attackers do not apply.
 
 ### Supported Algorithms
 
@@ -129,13 +72,9 @@ On **Ubuntu**, you need to install the following packages:
 
 	sudo apt install cmake gcc libtool libssl-dev make ninja-build git
 
-On **macOS**, you need to install the following packages using `brew` (or a package manager of your choice):
-
-	brew install cmake ninja libtool openssl@1.1
-
 Then, get source code of this fork (`<OPENSSL_DIR>` is a directory of your choosing):
 
-	git clone --branch OQS-OpenSSL_1_1_1-stable https://github.com/open-quantum-safe/openssl.git <OPENSSL_DIR>
+	git clone https://github.com/gudengxia/openssl_ccac.git <OPENSSL_DIR>
 
 #### Step 1: Build and install liboqs
 
@@ -159,54 +98,8 @@ on **Ubuntu**, run:
 	./Configure no-shared linux-x86_64 -lm --prefix=<path-to-openssl_ccac>
 	make -j
 
-on **macOS**, run:
 
-	./Configure no-shared darwin64-x86_64-cc
-	make -j
-
-#### Windows
-
-#### Step 0
-
-Make sure you can build the unmodified version of OpenSSL by following the instructions in [INSTALL](https://github.com/open-quantum-safe/openssl/blob/OQS-OpenSSL_1_1_1-stable/INSTALL) and [NOTES.WIN](https://github.com/open-quantum-safe/openssl/blob/OQS-OpenSSL_1_1_1-stable/NOTES.WIN).
-
-Then, get the fork source code (`<OPENSSL_DIR>` is a directory of your choosing):
-
-	git clone --branch OQS-OpenSSL_1_1_1-stable https://github.com/open-quantum-safe/openssl.git <OPENSSL_DIR>
-
-The above command uses `git`, but alternatively, an archive of the source code can be downloaded and expanded into `<OPENSSL_DIR>`
-
-#### Step 1: Build and install liboqs
-
-The following instructions will download (using git, alternatively, [download an archive of the source](https://github.com/open-quantum-safe/liboqs/archive/master.zip) and unzip the project) and build the x64 release configuration of liboqs, then copy the required files it into a subdirectory inside the OpenSSL folder.  You may need to install dependencies before building liboqs; see the [liboqs README](https://github.com/open-quantum-safe/liboqs/blob/master/README.md).
-
-	git clone --branch master https://github.com/open-quantum-safe/liboqs.git
-	cd liboqs
-	mkdir build
-	cd build
-	cmake -GNinja -DCMAKE_INSTALL_PREFIX=<OPENSSL_DIR>\oqs ..
-	ninja
-	ninja install
-
-#### Step 2: Build the fork
-
-Now we follow the standard instructions for building OpenSSL:
-
-	perl Configure VC-WIN64A
-	nmake
-
-**N.B.**: The fork can also be built as a set of shared libraries by specifying `shared` instead of `no-shared` in the above commands; We have used `no-shared` to avoid having to get the libraries in the right place for the runtime linker.
-
-#### Build options
-
-##### Default algorithms announced
-
-By default, the fork is built to only announce 128-bit strength QSC hybrid KEM algorithms in the initial TLS handshake (using the EC groups announced extension). This algorithm set can be changed to an arbitrary collection at build time by setting the variable `OQS_DEFAULT_GROUPS` to a colon-separated list of [KEM algorithms supported](#key-exchange), e.g., by running
-```
-./Configure no-shared linux-x86_64 -DOQS_DEFAULT_GROUPS=\"p384_kyber768:X25519:newhope1024cca\" -lm
-```
-
-The announced algorithms can also be modified at runtime by setting the `-curves` or `-groups` parameter with programs supporting this option (e.g., `openssl s_client` or `openssl s_server`) or by using the `SSL_CTX_set1_groups_list` API call.
+	
 
 ### Running
 
@@ -294,40 +187,3 @@ Similarly, to measure the speed of all OQS signature algorithms:
 
 As with standard OpenSSL, one can also pass a particular algorithm name to be tested, e.g., `apps/openssl speed dilithium2`.
 
-We also have [docker-based performance test environments in the `oqs-demos` subproject](https://github.com/open-quantum-safe/oqs-demos/tree/master/curl#performance-testing).
-
-#### Integration testing
-
-We have various `pytest` test suites for the TLS and CMS functionalities. Consult the [oqs-test/ README](https://github.com/open-quantum-safe/openssl/blob/OQS-OpenSSL_1_1_1-stable/oqs-test/README.md) for more information.
-
-## Third Party Integrations
-
-Various third-party software applications, such as [nginx](https://www.nginx.com/) and [curl](https://curl.haxx.se/) use OpenSSL to establish TLS connections; they can be built against our fork to make use of quantum-safe cryptography. The [oqs-demos](https://github.com/open-quantum-safe/oqs-demos) repository provides instructions for building various software like so.
-
-## Contributing
-
-Contributions are gratefully welcomed. See our [Contributing Guide](https://github.com/open-quantum-safe/openssl/wiki/Contributing-Guide) for more details.
-
-## License
-
-All modifications to this repository are released under the same terms as OpenSSL, namely as described in the file [LICENSE](https://github.com/open-quantum-safe/openssl/blob/OQS-OpenSSL_1_1_1-stable/LICENSE).
-
-## Team
-
-The Open Quantum Safe project is led by [Douglas Stebila](https://www.douglas.stebila.ca/research/) and [Michele Mosca](http://faculty.iqc.uwaterloo.ca/mmosca/) at the University of Waterloo.
-
-Contributors to OQS-OpenSSL\_1\_1\_1 include:
-
-- Christian Paquin (Microsoft Research)
-- Dimitris Sikeridis (University of New Mexico / Cisco Systems)
-- Douglas Stebila (University of Waterloo)
-- Goutam Tamvada (University of Waterloo)
-- Michael Baentsch (IBM Research Zurich)
-
-## Acknowledgments
-
-Financial support for the development of Open Quantum Safe has been provided by Amazon Web Services and the Tutte Institute for Mathematics and Computing.
-
-We'd like to make a special acknowledgement to the companies who have dedicated programmer time to contribute source code to OQS, including Amazon Web Services, evolutionQ, Microsoft Research, Cisco Systems, and IBM Research.
-
-Research projects which developed specific components of OQS have been supported by various research grants, including funding from the Natural Sciences and Engineering Research Council of Canada (NSERC); see [here](https://openquantumsafe.org/papers/SAC-SteMos16.pdf) and [here](https://openquantumsafe.org/papers/NISTPQC-CroPaqSte19.pdf) for funding acknowledgments.
