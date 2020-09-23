@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/open-quantum-safe/openssl/tree/OQS-OpenSSL_1_1_1-stable.svg?style=svg)](https://circleci.com/gh/open-quantum-safe/openssl/tree/OQS-OpenSSL_1_1_1-stable)
 
-OQS-OpenSSL\_1\_1\_1
+openssl_ccac
 ==================================
 
 [OpenSSL](https://openssl.org/) is an open-source implementation of the TLS protocol and various cryptographic algorithms ([View the original README](https://github.com/open-quantum-safe/openssl/blob/OQS-OpenSSL_1_1_1-stable/README).)
@@ -105,7 +105,8 @@ The following digital signature algorithms from liboqs are supported by the fork
 - **SPHINCS-Haraka**: `sphincsharaka128frobust*`, `sphincsharaka128fsimple`, `sphincsharaka128srobust`, `sphincsharaka128ssimple`, `sphincsharaka192frobust`, `sphincsharaka192fsimple`, `sphincsharaka192srobust`, `sphincsharaka192ssimple`, `sphincsharaka256frobust`, `sphincsharaka256fsimple`, `sphincsharaka256srobust`, `sphincsharaka256ssimple`
 - **SPHINCS-SHA256**: `sphincssha256128frobust`, `sphincssha256128fsimple`, `sphincssha256128srobust`, `sphincssha256128ssimple`, `sphincssha256192frobust`, `sphincssha256192fsimple`, `sphincssha256192srobust`, `sphincssha256192ssimple`, `sphincssha256256frobust`, `sphincssha256256fsimple`, `sphincssha256256srobust`, `sphincssha256256ssimple`
 - **SPHINCS-SHAKE256**: `sphincsshake256128frobust`, `sphincsshake256128fsimple`, `sphincsshake256128srobust`, `sphincsshake256128ssimple`, `sphincsshake256192frobust`, `sphincsshake256192fsimple`, `sphincsshake256192srobust`, `sphincsshake256192ssimple`, `sphincsshake256256frobust`, `sphincsshake256256fsimple`, `sphincsshake256256srobust`, `sphincsshake256256ssimple`
-
+- **mulan**: `mulan`, `p256_mulan`
+- **aigis**: `aigis`, `p256_aigis`
 The following hybrid algorithms are supported; they combine a quantum-safe algorithm listed above with a traditional digital signature algorithm (`<SIG>` is any one of the algorithms listed above):
 
 - if `<SIG>` has L1 security, then the fork provides the methods `rsa3072_<SIG>` and `p256_<SIG>`, which combine `<SIG>` with RSA3072 and with ECDSA using NIST's P256 curve respectively.
@@ -140,10 +141,10 @@ Then, get source code of this fork (`<OPENSSL_DIR>` is a directory of your choos
 
 The following instructions will download and build liboqs, then install it into a subdirectory inside the OpenSSL folder.
 
-	git clone --branch master https://github.com/open-quantum-safe/liboqs.git
+	git clone --branch master https://github.com/gudengxia/liboqs_ccac.git <OPENSS_DIR>
 	cd liboqs
 	mkdir build && cd build
-	cmake -GNinja -DCMAKE_INSTALL_PREFIX=<OPENSSL_DIR>/oqs ..
+	cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=<OPENSSL_DIR>/oqs -DUSE_OQS_OPENSSL=OFF -DBUILD_SHARED_LIBS=OFF -DOQS_USE_AVX2_INSTRUCTIONS=OFF
 	ninja
 	ninja install
 
@@ -155,7 +156,7 @@ Now we follow the standard instructions for building OpenSSL. Navigate to `<OPEN
 
 on **Ubuntu**, run:
 
-	./Configure no-shared linux-x86_64 -lm
+	./Configure no-shared linux-x86_64 -lm --prefix=<path-to-openssl_ccac>
 	make -j
 
 on **macOS**, run:
